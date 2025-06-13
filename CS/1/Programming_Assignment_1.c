@@ -122,10 +122,10 @@ int winning_check(){
     }
     
     //check by diagonal from left to right
-    for (int i = 1; i < 4; i++){
-        int human_account = 0;
-        int computer_account = 0;
+    int human_account = 0;
+    int computer_account = 0;
 
+    for (int i = 1; i < 4; i++){
         mapping(i, i);
         if (check(r, c)){
             if (board[r][c] == 'X'){
@@ -140,13 +140,10 @@ int winning_check(){
     }     
 
     //check by diagonal from right to left
+    human_account = 0;
+    computer_account = 0;
     for (int i = 1; i < 4; i++){
-        int j = 3;
-        int human_account = 0;
-        int computer_account = 0;
-
-        mapping(i, j);
-        j--;
+        mapping(i, 4 - i);
         if (check(r, c)){
             if (board[r][c] == 'X'){
                 human_account++;
@@ -209,13 +206,6 @@ int main(){
                 draw_board();
                 break;
             }
-
-            else if (result == 1){
-                printf("********\nYou lost!\n********\n\n");
-                draw_board();
-                break;
-            }
-           
         }
 
         if (turns == 5) {
@@ -231,28 +221,12 @@ int main(){
 
         if (turns > 2){
             int result = winning_check();
-            if (result == 0){
-                printf("********\nYou won!\n********\n\n");
-                draw_board();
-                break;
-            }
-
-            else if (result == 1){
+            if (result == 1){
                 printf("********\nYou lost!\n********\n\n");
                 draw_board();
                 break;
             }
         }
-
-        if (turns == 5) {
-            int result = winning_check();
-            if (result == -1) {
-                printf("********\nNo one wins!\nGame over!\n********\n\n");
-                draw_board();
-                break;
-            }
-        }
-
 
         draw_board();
 
