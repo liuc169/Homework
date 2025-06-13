@@ -180,7 +180,7 @@ int main(){
 
         mapping(x, y);
 
-        //mapping result testing for debug
+        //mapping result printing for debug
         //printf("r = %d\nc = %d\n\n", r, c);
 
 
@@ -215,8 +215,12 @@ int main(){
                 draw_board();
                 break;
             }
+           
+        }
 
-            else if (result == -1){
+        if (turns == 5) {
+            int result = winning_check();
+            if (result == -1) {
                 printf("********\nNo one wins!\nGame over!\n********\n\n");
                 draw_board();
                 break;
@@ -238,13 +242,17 @@ int main(){
                 draw_board();
                 break;
             }
+        }
 
-            else if (result == -1){
+        if (turns == 5) {
+            int result = winning_check();
+            if (result == -1) {
                 printf("********\nNo one wins!\nGame over!\n********\n\n");
                 draw_board();
                 break;
             }
         }
+
 
         draw_board();
 
