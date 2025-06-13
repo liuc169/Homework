@@ -1,10 +1,12 @@
 # include <stdio.h>
 
+
 int x = 0; //x coordinate of input
 int y = 0; //y coordinate of input
 int r = 0; //row of board
 int c = 0; //column of board
 int turns = 0;
+
 
 //game board 
 char board [5][11] = {
@@ -14,6 +16,7 @@ char board [5][11] = {
         {'-','-','-','|','-','-','-','|','-','-','-'},
         {' ',' ',' ','|',' ',' ',' ','|',' ',' ',' '},
 };
+
 
 //print out the whole board information
 void draw_board(){
@@ -25,28 +28,29 @@ void draw_board(){
     };
 }
 
+
 //input is a 3*3 matrix on the user side, but data are stored in a 5*11 matrix. We need map two matrix.
 //function is used for mapping input coordinate with board position
 int mapping(int x, int y){
     if (x == 1){
         r = 0;
-        if (y == 0) c = 1;
-        else if (y == 1) c = 5;
-        else if (y == 2) c = 9;
+        if (y == 1) c = 1;
+        else if (y == 2) c = 5;
+        else if (y == 3) c = 9;
     }
 
     else if (x == 2){
         r = 2;
-        if (y == 0) c = 1;
-        else if (y == 1) c = 5;
-        else if (y == 2) c = 9;
+        if (y == 1) c = 1;
+        else if (y == 2) c = 5;
+        else if (y == 3) c = 9;
     }
 
     else if (x == 3){
         r = 4;
-        if (y == 0) c = 1;
-        else if (y == 1) c = 5;
-        else if (y == 2) c = 9;
+        if (y == 1) c = 1;
+        else if (y == 2) c = 5;
+        else if (y == 3) c = 9;
     }
 
     return 0;
@@ -55,16 +59,21 @@ int mapping(int x, int y){
 
 //check whether the input is conflicted
 int check(int r, int c){
-    return board[r][c] == 'X' || 'O'; //if input position is occupied, return 1
+    return (board[r][c] == 'X' || board[r][c] == 'O'); //if input position is occupied, return 1
 }
 
 
 void computer_move(){
-    for (x = 0; x < 3; x++){
-        for (y = 0; y < 3; y++){
+    int lebal = 1;
+    for (x = 1; x < 4 && lebal; x++){
+        for (y = 1; y < 4; y++){
             mapping(x, y);
             if (check(r, c)) continue;
-            else board[r][c] = 'O'; //if the position is not occupied, fill with computer's move
+            else {
+                board[r][c] = 'O';
+                lebal = 0;
+                break;
+            } //if the position is not occupied, fill with computer's move
         }
     }
 }
@@ -73,12 +82,12 @@ void computer_move(){
 //check who wins and return judgement. checking by row by row, column by column, and by diagonal
 int winning_check(){
     //check rows one by one
-    for (x = 0; x < 3; x++){
+    for (int i = 1; i < 4; i++){
         int human_account = 0;
         int computer_account = 0;
 
-        for (y = 0; y < 3; y++){
-            mapping(x, y);
+        for (int j = 1; j < 4; j++){
+            mapping(i, j);
             if (check(r, c)){
                 if (board[r][c] == 'X'){
                     human_account++;
@@ -93,12 +102,12 @@ int winning_check(){
     }
 
     //check columns one by one
-    for (y = 0; y < 3; y++){
+    for (int j = 1; j < 4; j++){
         int human_account = 0;
         int computer_account = 0;
 
-        for (x = 0; x < 3; x++){
-            mapping(x, y);
+        for (int i = 1; i < 4; i++){
+            mapping(i, j);
             if (check(r, c)){
                 if (board[r][c] == 'X'){
                     human_account++;
@@ -113,13 +122,11 @@ int winning_check(){
     }
     
     //check by diagonal from left to right
-    for (x = 0; x < 3; x++){
-        y = 0;
+    for (int i = 1; i < 4; i++){
         int human_account = 0;
         int computer_account = 0;
 
-        mapping(x, y);
-        y++;
+        mapping(i, i);
         if (check(r, c)){
             if (board[r][c] == 'X'){
                 human_account++;
@@ -133,13 +140,13 @@ int winning_check(){
     }     
 
     //check by diagonal from right to left
-    for (x = 0; x < 3; x++){
-        y = 2;
+    for (int i = 1; i < 4; i++){
+        int j = 3;
         int human_account = 0;
         int computer_account = 0;
 
-        mapping(x, y);
-        y--;
+        mapping(i, j);
+        j--;
         if (check(r, c)){
             if (board[r][c] == 'X'){
                 human_account++;
@@ -150,7 +157,10 @@ int winning_check(){
 
         if (human_account == 3) return 0;
         else if (computer_account == 3) return 1;
-    }   
+    }
+
+    //no one wins
+    return -1;
 }
 
 
@@ -169,33 +179,74 @@ int main(){
         scanf("%d,%d", &x, &y);
 
         mapping(x, y);
+
+        //mapping result testing for debug
+        //printf("r = %d\nc = %d\n\n", r, c);
+
+
         //check user move is in range
-        if (check(r, c) || x > 2 || y > 2 || x < 0 || y < 0){
-            printf("Your move is invalid!\n");
+        if (x > 3 || y > 3 || x < 1 || y < 1){
+            printf("Your move is out of range!\n");
+            continue;
+        }
+
+        //check user move is in empty space
+        else if (check(r, c)){
+            printf("Your move is conflicted!\n");
             continue;
         }
 
         else board[r][c] = 'X'; //if the position is not occupied and input is valid, fill with user's move
 
-        computer_move();
 
-            //winning checking part
-            turns++;
-            if (turns > 2){
-                if (!winning_check()){
-                    printf("********\nYou won!\n********\n\n");
-                    draw_board();
-                    break;
-                }
+        //winning checking part
+        turns++;
 
-                if (winning_check()){
-                    printf("********\nYou lost!\n********\n\n");
-                    draw_board();
-                    break;
-                }
+        if (turns > 2){
+            int result = winning_check();
+            if (result == 0){
+                printf("********\nYou won!\n********\n\n");
+                draw_board();
+                break;
             }
 
-            draw_board();
+            else if (result == 1){
+                printf("********\nYou lost!\n********\n\n");
+                draw_board();
+                break;
+            }
+
+            else if (result == -1){
+                printf("********\nNo one wins!\nGame over!\n********\n\n");
+                draw_board();
+                break;
+            }
+        }
+
+        computer_move();
+
+        if (turns > 2){
+            int result = winning_check();
+            if (result == 0){
+                printf("********\nYou won!\n********\n\n");
+                draw_board();
+                break;
+            }
+
+            else if (result == 1){
+                printf("********\nYou lost!\n********\n\n");
+                draw_board();
+                break;
+            }
+
+            else if (result == -1){
+                printf("********\nNo one wins!\nGame over!\n********\n\n");
+                draw_board();
+                break;
+            }
+        }
+
+        draw_board();
 
     }
 
